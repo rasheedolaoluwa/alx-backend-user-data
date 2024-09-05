@@ -23,7 +23,8 @@ class SessionDBAuth(SessionExpAuth):
         return session_id
 
     def user_id_for_session_id(self, session_id=None):
-        """ Retrieves the user ID associated with a session stored in the database """
+        """ Retrieves the user ID associated with a session stored
+        in the database """
         if session_id is None:
             return None
 

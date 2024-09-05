@@ -38,7 +38,8 @@ class SessionExpAuth(SessionAuth):
         return session_id
 
     def user_id_for_session_id(self, session_id=None):
-        """ Retrieves the user ID based on the session ID and checks if the session is still valid """
+        """ Retrieves the user ID based on the session ID and checks if
+        the session is still valid """
 
         if session_id is None:
             return None
