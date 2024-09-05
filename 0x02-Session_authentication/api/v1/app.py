@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-Route module for the API
+API routing module
 """
 from api.v1.views import app_views
 from flask import Flask, jsonify, abort, request
 from flask_cors import CORS
+import os
 from os import getenv
 
 
@@ -15,7 +16,7 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
 AUTH_TYPE = getenv("AUTH_TYPE")
 
-# Set up authentication based on environment variable
+# Initialize authentication based on the environment variable
 if AUTH_TYPE == "auth":
     from api.v1.auth.auth import Auth
     auth = Auth()
@@ -35,25 +36,25 @@ elif AUTH_TYPE == "session_db_auth":
 
 @app.errorhandler(404)
 def not_found(error) -> str:
-    """ Handles 404 Not Found errors """
+    """ Handler for 404 errors (resource not found) """
     return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(401)
 def unauthorized_error(error) -> str:
-    """ Handles 401 Unauthorized errors """
+    """ Handler for 401 errors (unauthorized access) """
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def forbidden_error(error) -> str:
-    """ Handles 403 Forbidden errors """
+    """ Handler for 403 errors (access forbidden) """
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.before_request
 def before_request() -> str:
-    """ Request validation before each request """
+    """ Executes before each request to validate it """
     if auth is None:
         return
 
@@ -62,11 +63,11 @@ def before_request() -> str:
                       '/api/v1/forbidden/',
                       '/api/v1/auth_session/login/']
 
-    # Check if the request path requires authentication
+    # Check if the path requires authentication
     if not auth.require_auth(request.path, excluded_paths):
         return
 
-    # Validate authentication headers or session cookies
+    # Check for valid authorization headers or session cookie
     if auth.authorization_header(request) is None \
             and auth.session_cookie(request) is None:
         abort(401)
